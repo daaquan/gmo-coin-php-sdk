@@ -31,6 +31,10 @@ Use the `GmoCoin` facade to call API endpoints.
 use GmoCoin\Facades\GmoCoin;
 
 $response = GmoCoin::getStatus();
+$ticker   = GmoCoin::getTicker();
+$klines   = GmoCoin::getKlines('USD_JPY', 'ASK', '1min', '20231028');
+$books    = GmoCoin::getOrderBooks('USD_JPY');
+$assets   = GmoCoin::getAssets();
 ```
 
 The client automatically signs requests when API keys are configured.

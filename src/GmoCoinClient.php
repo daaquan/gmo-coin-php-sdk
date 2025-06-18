@@ -60,5 +60,76 @@ class GmoCoinClient
     {
         return $this->request('GET', '/public/v1/status');
     }
+
+    public function getTicker()
+    {
+        return $this->request('GET', '/public/v1/ticker');
+    }
+
+    public function getKlines(string $symbol, string $priceType, string $interval, string $date)
+    {
+        return $this->request('GET', '/public/v1/klines', [
+            'symbol'    => $symbol,
+            'priceType' => $priceType,
+            'interval'  => $interval,
+            'date'      => $date,
+        ]);
+    }
+
+    public function getOrderBooks(string $symbol)
+    {
+        return $this->request('GET', '/public/v1/orderbooks', [
+            'symbol' => $symbol,
+        ]);
+    }
+
+    public function getTrades(string $symbol, int $page = 1, int $count = 100)
+    {
+        return $this->request('GET', '/public/v1/trades', [
+            'symbol' => $symbol,
+            'page'   => $page,
+            'count'  => $count,
+        ]);
+    }
+
+    public function getSymbols()
+    {
+        return $this->request('GET', '/public/v1/symbols');
+    }
+
+    public function getMargin()
+    {
+        return $this->request('GET', '/private/v1/account/margin');
+    }
+
+    public function getAssets()
+    {
+        return $this->request('GET', '/private/v1/account/assets');
+    }
+
+    public function getTradingVolume()
+    {
+        return $this->request('GET', '/private/v1/account/tradingVolume');
+    }
+
+    public function getFiatDepositHistory()
+    {
+        return $this->request('GET', '/private/v1/account/fiatDeposit/history');
+    }
+
+    public function getFiatWithdrawalHistory()
+    {
+        return $this->request('GET', '/private/v1/account/fiatWithdrawal/history');
+    }
+
+    public function getDepositHistory()
+    {
+        return $this->request('GET', '/private/v1/account/deposit/history');
+    }
+
+    public function getWithdrawalHistory()
+    {
+        return $this->request('GET', '/private/v1/account/withdrawal/history');
+    }
 }
 
