@@ -55,5 +55,10 @@ class GmoCoinClient
 
         return json_decode($response, true);
     }
+
+    public function getStatus()
+    {
+        return $this->request('GET', '/public/v1/status');
+    }
 }
 
