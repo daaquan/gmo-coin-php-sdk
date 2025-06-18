@@ -30,7 +30,7 @@ Use the `GmoCoin` facade to call API endpoints.
 ```php
 use GmoCoin\Facades\GmoCoin;
 
-$response = GmoCoin::request('GET', '/public/v1/status');
+$response = GmoCoin::getStatus();
 ```
 
 The client automatically signs requests when API keys are configured.
