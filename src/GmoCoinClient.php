@@ -131,5 +131,90 @@ class GmoCoinClient
     {
         return $this->request('GET', '/private/v1/account/withdrawal/history');
     }
+
+    public function getOrders(array $params)
+    {
+        return $this->request('GET', '/private/v1/orders', $params);
+    }
+
+    public function getActiveOrders(array $params = [])
+    {
+        return $this->request('GET', '/private/v1/activeOrders', $params);
+    }
+
+    public function getExecutions(array $params)
+    {
+        return $this->request('GET', '/private/v1/executions', $params);
+    }
+
+    public function getLatestExecutions(array $params)
+    {
+        return $this->request('GET', '/private/v1/latestExecutions', $params);
+    }
+
+    public function getOpenPositions(array $params = [])
+    {
+        return $this->request('GET', '/private/v1/openPositions', $params);
+    }
+
+    public function getPositionSummary()
+    {
+        return $this->request('GET', '/private/v1/positionSummary');
+    }
+
+    public function speedOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/speedOrder', [], $body);
+    }
+
+    public function order(array $body)
+    {
+        return $this->request('POST', '/private/v1/order', [], $body);
+    }
+
+    public function ifdOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/ifdOrder', [], $body);
+    }
+
+    public function ifoOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/ifoOrder', [], $body);
+    }
+
+    public function changeOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/changeOrder', [], $body);
+    }
+
+    public function changeOcoOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/changeOcoOrder', [], $body);
+    }
+
+    public function changeIfdOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/changeIfdOrder', [], $body);
+    }
+
+    public function changeIfoOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/changeIfoOrder', [], $body);
+    }
+
+    public function cancelOrders(array $body)
+    {
+        return $this->request('POST', '/private/v1/cancelOrders', [], $body);
+    }
+
+    public function cancelBulkOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/cancelBulkOrder', [], $body);
+    }
+
+    public function closeOrder(array $body)
+    {
+        return $this->request('POST', '/private/v1/closeOrder', [], $body);
+    }
 }
 
