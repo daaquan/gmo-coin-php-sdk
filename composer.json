@@ -1,0 +1,31 @@
+{
+    "name": "gmo-coin/gmo-coin-php-sdk",
+    "description": "Laravel service provider wrapper for GMO Coin FX API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "GMO Coin SDK",
+            "email": "dev@example.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "GmoCoin\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GmoCoin\\GmoCoinServiceProvider"
+            ],
+            "aliases": {
+                "GmoCoin": "GmoCoin\\Facades\\GmoCoin"
+            }
+        }
+    }
+}
