@@ -13,7 +13,9 @@ class GmoCoinFxServiceProvider extends ServiceProvider
         $this->app->singleton(GmoCoinFxClient::class, function ($app) {
             $config = $app['config']->get('gmocoin');
             $endpoint = $config['fx_endpoint'] ?? $config['endpoint'];
-            return new GmoCoinFxClient($endpoint, $config['api_key'], $config['api_secret']);
+            $apiKey = $config['fx_api_key'] ?? $config['api_key'];
+            $apiSecret = $config['fx_api_secret'] ?? $config['api_secret'];
+            return new GmoCoinFxClient($endpoint, $apiKey, $apiSecret);
         });
     }
 
