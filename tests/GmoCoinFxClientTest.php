@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-class DummyClient extends GmoCoin\GmoCoinClient
+class DummyClient extends GmoCoin\GmoCoinFxClient
 {
     public $calls = [];
     public function request(string $method, string $path, array $params = [], array $body = [])
@@ -11,7 +11,7 @@ class DummyClient extends GmoCoin\GmoCoinClient
     }
 }
 
-class GmoCoinClientTest extends TestCase
+class GmoCoinFxClientTest extends TestCase
 {
     /**
      * @dataProvider apiProvider

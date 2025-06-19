@@ -22,10 +22,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "GmoCoin\\GmoCoinServiceProvider"
+                "GmoCoin\\GmoCoinFxServiceProvider"
             ],
             "aliases": {
-                "GmoCoin": "GmoCoin\\Facades\\GmoCoin"
+                "GmoCoinFx": "GmoCoin\\Facades\\GmoCoinFx"
             }
         }
     },
