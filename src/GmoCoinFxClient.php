@@ -2,7 +2,7 @@
 
 namespace GmoCoin;
 
-class GmoCoinClient
+class GmoCoinFxClient
 {
     private $endpoint;
     private $apiKey;

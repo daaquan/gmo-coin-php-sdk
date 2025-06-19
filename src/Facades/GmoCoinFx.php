@@ -4,11 +4,11 @@ namespace GmoCoin\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class GmoCoin extends Facade
+class GmoCoinFx extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \GmoCoin\GmoCoinClient::class;
+        return \GmoCoin\GmoCoinFxClient::class;
     }
 }
 

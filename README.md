@@ -28,13 +28,13 @@ GMO_COIN_API_SECRET=your_secret
 Use the `GmoCoin` facade to call API endpoints.
 
 ```php
-use GmoCoin\Facades\GmoCoin;
+use GmoCoin\Facades\GmoCoinFx;
 
-$response = GmoCoin::getStatus();
-$ticker   = GmoCoin::getTicker();
-$klines   = GmoCoin::getKlines('USD_JPY', 'ASK', '1min', '20231028');
-$books    = GmoCoin::getOrderBooks('USD_JPY');
-$assets   = GmoCoin::getAssets();
+$response = GmoCoinFx::getStatus();
+$ticker   = GmoCoinFx::getTicker();
+$klines   = GmoCoinFx::getKlines('USD_JPY', 'ASK', '1min', '20231028');
+$books    = GmoCoinFx::getOrderBooks('USD_JPY');
+$assets   = GmoCoinFx::getAssets();
 ```
 
 The client automatically signs requests when API keys are configured.

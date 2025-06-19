@@ -4,15 +4,15 @@ namespace GmoCoin;
 
 use Illuminate\Support\ServiceProvider;
 
-class GmoCoinServiceProvider extends ServiceProvider
+class GmoCoinFxServiceProvider extends ServiceProvider
 {
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/gmocoin.php', 'gmocoin');
 
-        $this->app->singleton(GmoCoinClient::class, function ($app) {
+        $this->app->singleton(GmoCoinFxClient::class, function ($app) {
             $config = $app['config']->get('gmocoin');
-            return new GmoCoinClient($config['endpoint'], $config['api_key'], $config['api_secret']);
+            return new GmoCoinFxClient($config['endpoint'], $config['api_key'], $config['api_secret']);
         });
     }
 
