@@ -20,8 +20,10 @@ php artisan vendor:publish --tag=config
 Set your credentials in `.env`:
 
 ```
-GMO_COIN_API_KEY=your_key
-GMO_COIN_API_SECRET=your_secret
+GMO_COIN_CRYPTO_API_KEY=your_crypto_key
+GMO_COIN_CRYPTO_API_SECRET=your_crypto_secret
+GMO_COIN_FX_API_KEY=your_fx_key
+GMO_COIN_FX_API_SECRET=your_fx_secret
 ```
 
 ## Usage

@@ -13,7 +13,9 @@ class GmoCoinServiceProvider extends ServiceProvider
         $this->app->singleton(GmoCoinClient::class, function ($app) {
             $config = $app['config']->get('gmocoin');
             $endpoint = $config['crypto_endpoint'] ?? $config['endpoint'];
-            return new GmoCoinClient($endpoint, $config['api_key'], $config['api_secret']);
+            $apiKey = $config['crypto_api_key'] ?? $config['api_key'];
+            $apiSecret = $config['crypto_api_secret'] ?? $config['api_secret'];
+            return new GmoCoinClient($endpoint, $apiKey, $apiSecret);
         });
     }
 
