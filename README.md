@@ -1,6 +1,7 @@
 # gmo-coin-php-sdk
 
-Laravel wrapper for the [GMO Coin FX API](https://api.coin.z.com/fxdocs/?php#).
+Laravel wrapper for the [GMO Coin APIs](https://api.coin.z.com/docs/#outline).
+It supports both the cryptocurrency and FX endpoints.
 
 ## Installation
 
@@ -25,16 +26,17 @@ GMO_COIN_API_SECRET=your_secret
 
 ## Usage
 
-Use the `GmoCoin` facade to call API endpoints.
+Use the provided facades to call API endpoints.
 
 ```php
+use GmoCoin\Facades\GmoCoin;
 use GmoCoin\Facades\GmoCoinFx;
 
-$response = GmoCoinFx::getStatus();
-$ticker   = GmoCoinFx::getTicker();
-$klines   = GmoCoinFx::getKlines('USD_JPY', 'ASK', '1min', '20231028');
-$books    = GmoCoinFx::getOrderBooks('USD_JPY');
-$assets   = GmoCoinFx::getAssets();
+$response = GmoCoin::getStatus();
+$ticker   = GmoCoin::getTicker();
+$klines   = GmoCoin::getKlines('BTC', 'ASK', '1min', '20231028');
+$books    = GmoCoin::getOrderBooks('BTC');
+$assets   = GmoCoin::getAssets();
 ```
 
 The client automatically signs requests when API keys are configured.
