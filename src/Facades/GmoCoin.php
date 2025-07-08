@@ -8,6 +8,6 @@ class GmoCoin extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \GmoCoin\GmoCoinClient::class;
+        return \GmoCoin\GmoCoinCryptoClient::class;
     }
 }
