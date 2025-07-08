@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Configuration values for the GMO Coin SDK.
+ * These settings control API endpoints and credentials used by the
+ * {@see GmoCoinCryptoClient} and {@see GmoCoinFxClient} classes.
+ */
+
 return [
     // Default endpoints for each API
     'crypto_endpoint' => env('GMO_COIN_CRYPTO_ENDPOINT', 'https://api.coin.z.com'),

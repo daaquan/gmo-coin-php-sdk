@@ -2,12 +2,28 @@
 
 namespace GmoCoin;
 
+/**
+ * Client for interacting with the GMO Coin FX API.
+ * This class encapsulates all REST requests made to the FX endpoint.
+ */
 class GmoCoinFxClient
 {
-    private $endpoint;
-    private $apiKey;
-    private $apiSecret;
+    /** @var string Base URL for the API */
+    private string $endpoint;
 
+    /** @var string API key used for authenticated requests */
+    private string $apiKey;
+
+    /** @var string API secret used to sign requests */
+    private string $apiSecret;
+
+    /**
+     * Create a new API client instance.
+     *
+     * @param string $endpoint   Base URL for the FX API.
+     * @param string $apiKey     Optional API key for private endpoints.
+     * @param string $apiSecret  Optional API secret for private endpoints.
+     */
     public function __construct(string $endpoint, string $apiKey = '', string $apiSecret = '')
     {
         $this->endpoint = rtrim($endpoint, '/');
@@ -15,7 +31,17 @@ class GmoCoinFxClient
         $this->apiSecret = $apiSecret;
     }
 
-    public function request(string $method, string $path, array $params = [], array $body = [])
+    /**
+     * Perform a HTTP request against the FX API.
+     *
+     * @param string               $method HTTP method to use.
+     * @param string               $path   Request path starting with '/'.
+     * @param array<string, mixed> $params Optional query parameters.
+     * @param array<string, mixed> $body   Optional JSON body for POST requests.
+     *
+     * @return array<string, mixed> Decoded JSON response from the API.
+     */
+    public function request(string $method, string $path, array $params = [], array $body = []): array
     {
         $url = $this->endpoint . $path;
         if (!empty($params)) {
@@ -26,7 +52,7 @@ class GmoCoinFxClient
             'Content-Type: application/json'
         ];
 
-        $payload = json_encode($body, JSON_UNESCAPED_UNICODE);
+        $payload = json_encode($body, JSON_UNESCAPED_UNICODE) ?: '';
 
         if ($this->apiKey && $this->apiSecret) {
             $timestamp = (string) round(microtime(true) * 1000);
@@ -39,12 +65,16 @@ class GmoCoinFxClient
         }
 
         $ch = curl_init($url);
+        if ($ch === false) {
+            throw new \RuntimeException('Unable to initialize curl');
+        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         if ($method !== 'GET') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            $payloadString = (string) $payload;
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadString);
         }
 
         $response = curl_exec($ch);
@@ -52,21 +82,43 @@ class GmoCoinFxClient
             throw new \RuntimeException('Curl error: ' . curl_error($ch));
         }
         curl_close($ch);
-
-        return json_decode($response, true);
+        /** @var string $response */
+        /** @var array<string, mixed> $decoded */
+        $decoded = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+        return $decoded;
     }
 
-    public function getStatus()
+    /**
+     * Retrieve the API service status.
+     *
+     * @return array<string, mixed>
+     */
+    public function getStatus(): array
     {
         return $this->request('GET', '/public/v1/status');
     }
 
-    public function getTicker()
+    /**
+     * Retrieve market ticker information.
+     *
+     * @return array<string, mixed>
+     */
+    public function getTicker(): array
     {
         return $this->request('GET', '/public/v1/ticker');
     }
 
-    public function getKlines(string $symbol, string $priceType, string $interval, string $date)
+    /**
+     * Fetch candlestick data for a symbol.
+     *
+     * @param string $symbol     Trading pair.
+     * @param string $priceType  Price type such as ASK/BID.
+     * @param string $interval   Candle interval.
+     * @param string $date       Date in YYYYMMDD format.
+     *
+     * @return array<string, mixed>
+     */
+    public function getKlines(string $symbol, string $priceType, string $interval, string $date): array
     {
         return $this->request('GET', '/public/v1/klines', [
             'symbol'    => $symbol,
@@ -76,14 +128,30 @@ class GmoCoinFxClient
         ]);
     }
 
-    public function getOrderBooks(string $symbol)
+    /**
+     * Retrieve the order book for a symbol.
+     *
+     * @param string $symbol Trading pair.
+     *
+     * @return array<string, mixed>
+     */
+    public function getOrderBooks(string $symbol): array
     {
         return $this->request('GET', '/public/v1/orderbooks', [
             'symbol' => $symbol,
         ]);
     }
 
-    public function getTrades(string $symbol, int $page = 1, int $count = 100)
+    /**
+     * Get trade history for a symbol.
+     *
+     * @param string $symbol Trading pair.
+     * @param int    $page   Page number for pagination.
+     * @param int    $count  Items per page.
+     *
+     * @return array<string, mixed>
+     */
+    public function getTrades(string $symbol, int $page = 1, int $count = 100): array
     {
         return $this->request('GET', '/public/v1/trades', [
             'symbol' => $symbol,
@@ -92,127 +160,284 @@ class GmoCoinFxClient
         ]);
     }
 
-    public function getSymbols()
+    /**
+     * List all tradable symbols.
+     *
+     * @return array<string, mixed>
+     */
+    public function getSymbols(): array
     {
         return $this->request('GET', '/public/v1/symbols');
     }
 
-    public function getMargin()
+    /**
+     * Get account margin information.
+     *
+     * @return array<string, mixed>
+     */
+    public function getMargin(): array
     {
         return $this->request('GET', '/private/v1/account/margin');
     }
 
-    public function getAssets()
+    /**
+     * Fetch current account assets.
+     *
+     * @return array<string, mixed>
+     */
+    public function getAssets(): array
     {
         return $this->request('GET', '/private/v1/account/assets');
     }
 
-    public function getTradingVolume()
+    /**
+     * Retrieve cumulative trading volume.
+     *
+     * @return array<string, mixed>
+     */
+    public function getTradingVolume(): array
     {
         return $this->request('GET', '/private/v1/account/tradingVolume');
     }
 
-    public function getFiatDepositHistory()
+    /**
+     * Get history of fiat deposits.
+     *
+     * @return array<string, mixed>
+     */
+    public function getFiatDepositHistory(): array
     {
         return $this->request('GET', '/private/v1/account/fiatDeposit/history');
     }
 
-    public function getFiatWithdrawalHistory()
+    /**
+     * Get history of fiat withdrawals.
+     *
+     * @return array<string, mixed>
+     */
+    public function getFiatWithdrawalHistory(): array
     {
         return $this->request('GET', '/private/v1/account/fiatWithdrawal/history');
     }
 
-    public function getDepositHistory()
+    /**
+     * Get cryptocurrency deposit history.
+     *
+     * @return array<string, mixed>
+     */
+    public function getDepositHistory(): array
     {
         return $this->request('GET', '/private/v1/account/deposit/history');
     }
 
-    public function getWithdrawalHistory()
+    /**
+     * Get cryptocurrency withdrawal history.
+     *
+     * @return array<string, mixed>
+     */
+    public function getWithdrawalHistory(): array
     {
         return $this->request('GET', '/private/v1/account/withdrawal/history');
     }
 
-    public function getOrders(array $params)
+    /**
+     * Retrieve order information.
+     *
+     * @param array<string, mixed> $params Query parameters.
+     *
+     * @return array<string, mixed>
+     */
+    public function getOrders(array $params): array
     {
         return $this->request('GET', '/private/v1/orders', $params);
     }
 
-    public function getActiveOrders(array $params = [])
+    /**
+     * List active orders.
+     *
+     * @param array<string, mixed> $params Optional query parameters.
+     *
+     * @return array<string, mixed>
+     */
+    public function getActiveOrders(array $params = []): array
     {
         return $this->request('GET', '/private/v1/activeOrders', $params);
     }
 
-    public function getExecutions(array $params)
+    /**
+     * Fetch execution history.
+     *
+     * @param array<string, mixed> $params Query parameters.
+     *
+     * @return array<string, mixed>
+     */
+    public function getExecutions(array $params): array
     {
         return $this->request('GET', '/private/v1/executions', $params);
     }
 
-    public function getLatestExecutions(array $params)
+    /**
+     * Fetch most recent executions.
+     *
+     * @param array<string, mixed> $params Query parameters.
+     *
+     * @return array<string, mixed>
+     */
+    public function getLatestExecutions(array $params): array
     {
         return $this->request('GET', '/private/v1/latestExecutions', $params);
     }
 
-    public function getOpenPositions(array $params = [])
+    /**
+     * Retrieve currently open positions.
+     *
+     * @param array<string, mixed> $params Optional query parameters.
+     *
+     * @return array<string, mixed>
+     */
+    public function getOpenPositions(array $params = []): array
     {
         return $this->request('GET', '/private/v1/openPositions', $params);
     }
 
-    public function getPositionSummary()
+    /**
+     * Get a summary of positions.
+     *
+     * @return array<string, mixed>
+     */
+    public function getPositionSummary(): array
     {
         return $this->request('GET', '/private/v1/positionSummary');
     }
 
-    public function speedOrder(array $body)
+    /**
+     * Send a speed order request.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function speedOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/speedOrder', [], $body);
     }
 
-    public function order(array $body)
+    /**
+     * Place a standard order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function order(array $body): array
     {
         return $this->request('POST', '/private/v1/order', [], $body);
     }
 
-    public function ifdOrder(array $body)
+    /**
+     * Place an IFD order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function ifdOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/ifdOrder', [], $body);
     }
 
-    public function ifoOrder(array $body)
+    /**
+     * Place an IFO order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function ifoOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/ifoOrder', [], $body);
     }
 
-    public function changeOrder(array $body)
+    /**
+     * Amend an existing order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function changeOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/changeOrder', [], $body);
     }
 
-    public function changeOcoOrder(array $body)
+    /**
+     * Amend an existing OCO order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function changeOcoOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/changeOcoOrder', [], $body);
     }
 
-    public function changeIfdOrder(array $body)
+    /**
+     * Amend an existing IFD order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function changeIfdOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/changeIfdOrder', [], $body);
     }
 
-    public function changeIfoOrder(array $body)
+    /**
+     * Amend an existing IFO order.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function changeIfoOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/changeIfoOrder', [], $body);
     }
 
-    public function cancelOrders(array $body)
+    /**
+     * Cancel orders by ID.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function cancelOrders(array $body): array
     {
         return $this->request('POST', '/private/v1/cancelOrders', [], $body);
     }
 
-    public function cancelBulkOrder(array $body)
+    /**
+     * Cancel multiple orders at once.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function cancelBulkOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/cancelBulkOrder', [], $body);
     }
 
-    public function closeOrder(array $body)
+    /**
+     * Close an open position.
+     *
+     * @param array<string, mixed> $body Request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function closeOrder(array $body): array
     {
         return $this->request('POST', '/private/v1/closeOrder', [], $body);
     }
