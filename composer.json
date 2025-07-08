@@ -23,7 +23,7 @@
         "laravel": {
             "providers": [
                 "GmoCoin\\GmoCoinFxServiceProvider",
-                "GmoCoin\\GmoCoinServiceProvider"
+                "GmoCoin\\GmoCoinCryptoServiceProvider"
             ],
             "aliases": {
                 "GmoCoinFx": "GmoCoin\\Facades\\GmoCoinFx",
