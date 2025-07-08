@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 class DummyCryptoClient extends GmoCoin\GmoCoinCryptoClient
 {
     public $calls = [];
-    public function request(string $method, string $path, array $params = [], array $body = [])
+    public function request(string $method, string $path, array $params = [], array $body = []): array
     {
         $this->calls[] = [$method, $path, $params, $body];
         return ['ok' => true];

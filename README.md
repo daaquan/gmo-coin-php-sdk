@@ -43,3 +43,11 @@ $assets   = GmoCoin::getAssets();
 
 The client automatically signs requests when API keys are configured.
 
+## Development
+
+Run static analysis to keep the codebase healthy:
+
+```bash
+composer phpstan
+```
+

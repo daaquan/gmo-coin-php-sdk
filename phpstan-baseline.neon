@@ -1,0 +1,25 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#3 \$value of function curl_setopt expects non\-empty\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/GmoCoinCryptoClient.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: src/GmoCoinCryptoServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$value of function curl_setopt expects non\-empty\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/GmoCoinFxClient.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: src/GmoCoinFxServiceProvider.php
