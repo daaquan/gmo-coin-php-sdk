@@ -1,6 +1,6 @@
 {
     "name": "gmo-coin/gmo-coin-php-sdk",
-    "description": "Laravel service provider wrapper for GMO Coin FX API",
+    "description": "Laravel wrapper for GMO Coin cryptocurrency and FX APIs",
     "type": "library",
     "license": "MIT",
     "authors": [

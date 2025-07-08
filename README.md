@@ -1,7 +1,13 @@
 # gmo-coin-php-sdk
 
-Laravel wrapper for the [GMO Coin APIs](https://api.coin.z.com/docs/#outline).
-It supports both the cryptocurrency and FX endpoints.
+Laravel wrapper for the [GMO Coin APIs](https://api.coin.z.com/docs/#outline). It
+provides a convenient interface for both the cryptocurrency and FX endpoints.
+
+## Features
+
+- Facades for Crypto and FX APIs
+- Automatic request signing when credentials are configured
+- Compatible with PHP 8.1+ and Laravel 12
 
 ## Installation
 
