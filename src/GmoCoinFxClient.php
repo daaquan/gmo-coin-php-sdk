@@ -17,6 +17,43 @@ class GmoCoinFxClient
     /** @var string API secret used to sign requests */
     private string $apiSecret;
 
+    /** @var array<string, string> Mapping of paths to endpoint types */
+    private array $endpointMap = [
+        // Public endpoints
+        '/v1/status' => 'public',
+        '/v1/ticker' => 'public',
+        '/v1/klines' => 'public',
+        '/v1/orderbooks' => 'public',
+        '/v1/trades' => 'public',
+        '/v1/symbols' => 'public',
+        
+        // Private endpoints
+        '/v1/account/margin' => 'private',
+        '/v1/account/assets' => 'private',
+        '/v1/account/tradingVolume' => 'private',
+        '/v1/account/fiatDeposit/history' => 'private',
+        '/v1/account/fiatWithdrawal/history' => 'private',
+        '/v1/account/deposit/history' => 'private',
+        '/v1/account/withdrawal/history' => 'private',
+        '/v1/orders' => 'private',
+        '/v1/activeOrders' => 'private',
+        '/v1/executions' => 'private',
+        '/v1/latestExecutions' => 'private',
+        '/v1/openPositions' => 'private',
+        '/v1/positionSummary' => 'private',
+        '/v1/speedOrder' => 'private',
+        '/v1/order' => 'private',
+        '/v1/ifdOrder' => 'private',
+        '/v1/ifoOrder' => 'private',
+        '/v1/changeOrder' => 'private',
+        '/v1/changeOcoOrder' => 'private',
+        '/v1/changeIfdOrder' => 'private',
+        '/v1/changeIfoOrder' => 'private',
+        '/v1/cancelOrders' => 'private',
+        '/v1/cancelBulkOrder' => 'private',
+        '/v1/closeOrder' => 'private',
+    ];
+
     /**
      * Create a new API client instance.
      *
@@ -35,7 +72,7 @@ class GmoCoinFxClient
      * Perform a HTTP request against the FX API.
      *
      * @param string               $method HTTP method to use.
-     * @param string               $path   Request path starting with '/'.
+     * @param string               $path   Request path starting with '/v1/'.
      * @param array<string, mixed> $params Optional query parameters.
      * @param array<string, mixed> $body   Optional JSON body for POST requests.
      *
@@ -43,7 +80,9 @@ class GmoCoinFxClient
      */
     public function request(string $method, string $path, array $params = [], array $body = []): array
     {
-        $url = $this->endpoint . $path;
+        $endpointType = $this->endpointMap[$path] ?? 'public';
+        $prefix = $endpointType === 'private' ? '/private' : '/public';
+        $url = $this->endpoint . $prefix . $path;
         if (!empty($params)) {
             $url .= '?' . http_build_query($params);
         }
@@ -54,10 +93,9 @@ class GmoCoinFxClient
 
         $payload = empty($body) ? '' : json_encode($body, JSON_UNESCAPED_UNICODE);
 
-        if ($this->apiKey && $this->apiSecret) {
+        if ($this->apiKey && $this->apiSecret && $endpointType === 'private') {
             $timestamp = (string) round(microtime(true) * 1000);
-            $signaturePath = str_replace('/private', '', $path);
-            $text = $timestamp . $method . $signaturePath . $payload;
+            $text = $timestamp . $method . $path . $payload;
             $sign = hash_hmac('sha256', $text, $this->apiSecret);
 
             $headers[] = 'API-KEY: ' . $this->apiKey;
@@ -96,7 +134,7 @@ class GmoCoinFxClient
      */
     public function getStatus(): array
     {
-        return $this->request('GET', '/public/v1/status');
+        return $this->request('GET', '/v1/status');
     }
 
     /**
@@ -106,7 +144,7 @@ class GmoCoinFxClient
      */
     public function getTicker(): array
     {
-        return $this->request('GET', '/public/v1/ticker');
+        return $this->request('GET', '/v1/ticker');
     }
 
     /**
@@ -121,7 +159,7 @@ class GmoCoinFxClient
      */
     public function getKlines(string $symbol, string $priceType, string $interval, string $date): array
     {
-        return $this->request('GET', '/public/v1/klines', [
+        return $this->request('GET', '/v1/klines', [
             'symbol'    => $symbol,
             'priceType' => $priceType,
             'interval'  => $interval,
@@ -138,7 +176,7 @@ class GmoCoinFxClient
      */
     public function getOrderBooks(string $symbol): array
     {
-        return $this->request('GET', '/public/v1/orderbooks', [
+        return $this->request('GET', '/v1/orderbooks', [
             'symbol' => $symbol,
         ]);
     }
@@ -154,7 +192,7 @@ class GmoCoinFxClient
      */
     public function getTrades(string $symbol, int $page = 1, int $count = 100): array
     {
-        return $this->request('GET', '/public/v1/trades', [
+        return $this->request('GET', '/v1/trades', [
             'symbol' => $symbol,
             'page'   => $page,
             'count'  => $count,
@@ -168,7 +206,7 @@ class GmoCoinFxClient
      */
     public function getSymbols(): array
     {
-        return $this->request('GET', '/public/v1/symbols');
+        return $this->request('GET', '/v1/symbols');
     }
 
     /**
@@ -178,7 +216,7 @@ class GmoCoinFxClient
      */
     public function getMargin(): array
     {
-        return $this->request('GET', '/private/v1/account/margin');
+        return $this->request('GET', '/v1/account/margin');
     }
 
     /**
@@ -188,7 +226,7 @@ class GmoCoinFxClient
      */
     public function getAssets(): array
     {
-        return $this->request('GET', '/private/v1/account/assets');
+        return $this->request('GET', '/v1/account/assets');
     }
 
     /**
@@ -198,7 +236,7 @@ class GmoCoinFxClient
      */
     public function getTradingVolume(): array
     {
-        return $this->request('GET', '/private/v1/account/tradingVolume');
+        return $this->request('GET', '/v1/account/tradingVolume');
     }
 
     /**
@@ -208,7 +246,7 @@ class GmoCoinFxClient
      */
     public function getFiatDepositHistory(): array
     {
-        return $this->request('GET', '/private/v1/account/fiatDeposit/history');
+        return $this->request('GET', '/v1/account/fiatDeposit/history');
     }
 
     /**
@@ -218,7 +256,7 @@ class GmoCoinFxClient
      */
     public function getFiatWithdrawalHistory(): array
     {
-        return $this->request('GET', '/private/v1/account/fiatWithdrawal/history');
+        return $this->request('GET', '/v1/account/fiatWithdrawal/history');
     }
 
     /**
@@ -228,7 +266,7 @@ class GmoCoinFxClient
      */
     public function getDepositHistory(): array
     {
-        return $this->request('GET', '/private/v1/account/deposit/history');
+        return $this->request('GET', '/v1/account/deposit/history');
     }
 
     /**
@@ -238,7 +276,7 @@ class GmoCoinFxClient
      */
     public function getWithdrawalHistory(): array
     {
-        return $this->request('GET', '/private/v1/account/withdrawal/history');
+        return $this->request('GET', '/v1/account/withdrawal/history');
     }
 
     /**
@@ -250,7 +288,7 @@ class GmoCoinFxClient
      */
     public function getOrders(array $params): array
     {
-        return $this->request('GET', '/private/v1/orders', $params);
+        return $this->request('GET', '/v1/orders', $params);
     }
 
     /**
@@ -262,7 +300,7 @@ class GmoCoinFxClient
      */
     public function getActiveOrders(array $params = []): array
     {
-        return $this->request('GET', '/private/v1/activeOrders', $params);
+        return $this->request('GET', '/v1/activeOrders', $params);
     }
 
     /**
@@ -274,7 +312,7 @@ class GmoCoinFxClient
      */
     public function getExecutions(array $params): array
     {
-        return $this->request('GET', '/private/v1/executions', $params);
+        return $this->request('GET', '/v1/executions', $params);
     }
 
     /**
@@ -286,7 +324,7 @@ class GmoCoinFxClient
      */
     public function getLatestExecutions(array $params): array
     {
-        return $this->request('GET', '/private/v1/latestExecutions', $params);
+        return $this->request('GET', '/v1/latestExecutions', $params);
     }
 
     /**
@@ -298,7 +336,7 @@ class GmoCoinFxClient
      */
     public function getOpenPositions(array $params = []): array
     {
-        return $this->request('GET', '/private/v1/openPositions', $params);
+        return $this->request('GET', '/v1/openPositions', $params);
     }
 
     /**
@@ -308,7 +346,7 @@ class GmoCoinFxClient
      */
     public function getPositionSummary(): array
     {
-        return $this->request('GET', '/private/v1/positionSummary');
+        return $this->request('GET', '/v1/positionSummary');
     }
 
     /**
@@ -320,7 +358,7 @@ class GmoCoinFxClient
      */
     public function speedOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/speedOrder', [], $body);
+        return $this->request('POST', '/v1/speedOrder', [], $body);
     }
 
     /**
@@ -332,7 +370,7 @@ class GmoCoinFxClient
      */
     public function order(array $body): array
     {
-        return $this->request('POST', '/private/v1/order', [], $body);
+        return $this->request('POST', '/v1/order', [], $body);
     }
 
     /**
@@ -344,7 +382,7 @@ class GmoCoinFxClient
      */
     public function ifdOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/ifdOrder', [], $body);
+        return $this->request('POST', '/v1/ifdOrder', [], $body);
     }
 
     /**
@@ -356,7 +394,7 @@ class GmoCoinFxClient
      */
     public function ifoOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/ifoOrder', [], $body);
+        return $this->request('POST', '/v1/ifoOrder', [], $body);
     }
 
     /**
@@ -368,7 +406,7 @@ class GmoCoinFxClient
      */
     public function changeOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/changeOrder', [], $body);
+        return $this->request('POST', '/v1/changeOrder', [], $body);
     }
 
     /**
@@ -380,7 +418,7 @@ class GmoCoinFxClient
      */
     public function changeOcoOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/changeOcoOrder', [], $body);
+        return $this->request('POST', '/v1/changeOcoOrder', [], $body);
     }
 
     /**
@@ -392,7 +430,7 @@ class GmoCoinFxClient
      */
     public function changeIfdOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/changeIfdOrder', [], $body);
+        return $this->request('POST', '/v1/changeIfdOrder', [], $body);
     }
 
     /**
@@ -404,7 +442,7 @@ class GmoCoinFxClient
      */
     public function changeIfoOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/changeIfoOrder', [], $body);
+        return $this->request('POST', '/v1/changeIfoOrder', [], $body);
     }
 
     /**
@@ -416,7 +454,7 @@ class GmoCoinFxClient
      */
     public function cancelOrders(array $body): array
     {
-        return $this->request('POST', '/private/v1/cancelOrders', [], $body);
+        return $this->request('POST', '/v1/cancelOrders', [], $body);
     }
 
     /**
@@ -428,7 +466,7 @@ class GmoCoinFxClient
      */
     public function cancelBulkOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/cancelBulkOrder', [], $body);
+        return $this->request('POST', '/v1/cancelBulkOrder', [], $body);
     }
 
     /**
@@ -440,7 +478,7 @@ class GmoCoinFxClient
      */
     public function closeOrder(array $body): array
     {
-        return $this->request('POST', '/private/v1/closeOrder', [], $body);
+        return $this->request('POST', '/v1/closeOrder', [], $body);
     }
 }
 
