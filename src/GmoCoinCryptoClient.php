@@ -52,11 +52,12 @@ class GmoCoinCryptoClient
             'Content-Type: application/json'
         ];
 
-        $payload = json_encode($body, JSON_UNESCAPED_UNICODE) ?: '';
+        $payload = empty($body) ? '' : json_encode($body, JSON_UNESCAPED_UNICODE);
 
         if ($this->apiKey && $this->apiSecret) {
             $timestamp = (string) round(microtime(true) * 1000);
-            $text = $timestamp . $method . $path . ($payload === 'null' ? '' : $payload);
+            $signaturePath = str_replace('/private', '', $path);
+            $text = $timestamp . $method . $signaturePath . $payload;
             $sign = hash_hmac('sha256', $text, $this->apiSecret);
 
             $headers[] = 'API-KEY: ' . $this->apiKey;
